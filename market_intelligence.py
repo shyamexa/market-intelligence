@@ -23,11 +23,22 @@ exa = Exa(api_key=EXA_API_KEY)
 openai = OpenAI(api_key=OPENAI_API_KEY)
 
 class MarketIntelligenceBot:
+    """
+    Market Intelligence Bot for automated company research and analysis.
+    
+    Simple usage - just provide company name:
+        bot = MarketIntelligenceBot(company_name="Apple")
+    
+    The system will automatically:
+    - Detect the industry from the company name using AI
+    - Generate relevant research questions for that industry
+    - Search trusted financial sources for intelligence
+    """
     def __init__(self, company_name="", industry="", competitors=None, domains=None):
         self.company_name = company_name
         self.industry = industry or self._detect_industry(company_name)
-        self.competitors = competitors or []
-        self.domains = domains or []
+        self.competitors = competitors or []  # Optional - not used in current implementation
+        self.domains = domains or []  # Optional - for custom trusted sources
     
     def _detect_industry(self, company_name):
         """Auto-detect industry from company name using AI"""
@@ -301,7 +312,7 @@ class MarketIntelligenceBot:
             summary_completion = openai.chat.completions.create(
                 model="gpt-4",
                 messages=[
-                    {"role": "system", "content": "You are a senior business analyst creating executive summaries."},
+                    {"role": "system", "content": "You are a senior business analyst creating executive summaries. This needs to be concise; executives don't have time."},
                     {"role": "user", "content": summary_prompt},
                 ],
                 temperature=0.3
@@ -344,12 +355,14 @@ class MarketIntelligenceBot:
 
 # Example usage
 if __name__ == "__main__":
-    # Configure for your specific use case
+    # Configure for your specific use case - only company name needed!
     bot = MarketIntelligenceBot(
-        company_name="TechCorp",
-        industry="artificial intelligence",
-        competitors=["OpenAI", "Anthropic", "Google DeepMind", "Microsoft"]
+        company_name="TechCorp"  # Industry will be auto-detected from company name
     )
+    
+    print(f"🏢 Company: {bot.company_name}")
+    print(f"🏭 Auto-detected Industry: {bot.industry}")
+    print(f"📅 Analysis Date: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
     
     # Run different types of analysis
     focus_areas = ["competitive", "funding", "trends", "sales", "regulatory"]

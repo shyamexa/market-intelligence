@@ -159,6 +159,21 @@ The application will be available at `http://localhost:5000`
 
 ## 🔧 Customization
 
+### Simple Usage
+
+The system only requires a company name - everything else is auto-detected:
+
+```python
+from market_intelligence import MarketIntelligenceBot
+
+# Just provide the company name!
+bot = MarketIntelligenceBot(company_name="Apple")
+
+# Industry will be auto-detected as "technology"
+# Research questions will be generated automatically
+report = bot.run_market_intelligence(focus_area="competitive", timeframe="1M")
+```
+
 ### Adding New Focus Areas
 
 Edit the `generate_market_questions` method in `market_intelligence.py`:
