@@ -57,7 +57,11 @@ class MarketIntelligenceBot:
                 max_tokens=20
             )
             
-            detected_industry = completion.choices[0].message.content.strip().lower()
+            detected_industry = completion.choices[0].message.content
+            if detected_industry:
+                detected_industry = detected_industry.strip().lower()
+            else:
+                detected_industry = "technology"
             return detected_industry
             
         except Exception as e:
@@ -108,24 +112,31 @@ class MarketIntelligenceBot:
         return base_questions.get(focus_area, base_questions["general"])
     
     def search_market_intelligence(self, questions, timeframe="1M"):
-        """Search for market intelligence with enhanced parameters"""
+        """
+        Search for market intelligence using EXA's highlights endpoint and domain filtering
         
-        # Enhanced search parameters for business intelligence
-        search_options = {
-            "num_sentences": 2,  # Get more context
-            "highlightsPerUrl": 2,  # Multiple highlights per source
-        }
+        KEY FEATURES:
+        1. HIGHLIGHTS ENDPOINT: Extracts only relevant sentences (not full articles)
+        2. DOMAIN FILTERING: Restricts search to trusted financial sources
+        3. DATE FILTERING: Ensures recency of information
         
-        # Add date filtering for recent information
+        Args:
+            questions: List of research questions
+            timeframe: How far back to search (1W, 1M, 3M, 6M, 1Y, 2Y)
+        
+        Returns:
+            Structured results with highlights and source attribution
+        """
+        
+        # 🎯 HIGHLIGHTS CONFIGURATION
+        # This is what makes our system superior to traditional web scraping
+        # Note: Exa automatically optimizes highlight length and number per URL
+        # We get precise, relevant excerpts instead of full article content
+        
+        # 📅 DATE FILTERING FOR RECENCY
         timeframe_days = {
-            "1W": 7,
-            "2W": 14,
-            "1M": 30,
-            "2M": 60,
-            "3M": 90,
-            "6M": 180,
-            "1Y": 365,
-            "2Y": 730
+            "1W": 7,   "2W": 14,  "1M": 30,   "2M": 60,
+            "3M": 90,  "6M": 180, "1Y": 365,  "2Y": 730
         }
         
         days = timeframe_days.get(timeframe, 30)  # Default to 1 month
@@ -133,47 +144,72 @@ class MarketIntelligenceBot:
         
         all_results = []
         
-        # Default business sources if no custom domains provided
-        default_domains = ["techcrunch.com", "bloomberg.com", "reuters.com", 
-                          "wsj.com", "forbes.com", "crunchbase.com", 
-                          "venturebeat.com", "businessinsider.com"]
+        # 🏦 TRUSTED FINANCIAL DOMAINS
+        # These are institutional-grade sources for financial compliance
+        default_domains = [
+            "bloomberg.com",         # Financial news and data
+            "reuters.com",           # International news and markets  
+            "wsj.com",              # Wall Street Journal
+            "forbes.com",           # Business and finance
+            "ft.com",               # Financial Times
+            "cnbc.com",             # Financial television
+            "techcrunch.com",       # Technology and startups
+            "crunchbase.com",       # Company and funding data
+            "venturebeat.com",      # Technology trends
+            "businessinsider.com",  # Business news
+            "sec.gov",              # SEC filings and regulatory
+            "federalreserve.gov"    # Federal Reserve data
+        ]
         
-        # Use custom domains if provided, otherwise use defaults
+        # 🛡️ DOMAIN FILTERING: Use custom domains if provided, otherwise use trusted defaults
         search_domains = self.domains if self.domains else default_domains
+        
+        print(f"🔍 Searching across {len(search_domains)} trusted domains:")
+        print(f"   Domain filtering: {', '.join(search_domains[:3])}{'...' if len(search_domains) > 3 else ''}")
         
         for question in questions:
             try:
-                # Search with date filtering and specified domains
+                print(f"📊 Processing: {question}")
+                
+                # 🚀 EXA NEURAL SEARCH with HIGHLIGHTS
+                # This is the core differentiator - highlights endpoint + domain filtering
                 search_response = exa.search_and_contents(
                     question, 
-                    type="neural",
-                    highlights=True, 
-                    num_results=5,  # More results for comprehensive analysis
-                    start_published_date=start_date,
-                    include_domains=search_domains
+                    type="neural",                    # Neural search for semantic understanding
+                    highlights=True,                  # 🎯 KEY: Use highlights instead of full content
+                    num_results=5,                    # Get multiple sources for comprehensive view
+                    start_published_date=start_date,  # 📅 Recent information only
+                    include_domains=search_domains    # 🏦 KEY: Trusted domains only
                 )
                 
-                # Extract and structure the information
+                # 📋 STRUCTURE RESULTS WITH HIGHLIGHTS
                 question_results = {
                     "question": question,
                     "results": []
                 }
                 
+                # Extract highlights (not full content) for precise analysis
                 for result in search_response.results:
-                    if result.highlights:
+                    if result.highlights:  # Only process if highlights exist
                         for highlight in result.highlights:
                             question_results["results"].append({
                                 "title": result.title,
                                 "url": result.url,
-                                "highlight": highlight,
-                                "published_date": getattr(result, 'published_date', None)
+                                "highlight": highlight,  # 🎯 This is the key - precise excerpts
+                                "published_date": getattr(result, 'published_date', None),
+                                "domain": result.url.split('/')[2] if '/' in result.url else "unknown"
                             })
                 
                 all_results.append(question_results)
+                print(f"   ✅ Found {len(question_results['results'])} relevant highlights")
                 
             except Exception as e:
-                print(f"Error searching for '{question}': {e}")
+                print(f"❌ Error searching for '{question}': {e}")
                 continue
+        
+        print(f"\n🎯 HIGHLIGHTS SUMMARY:")
+        print(f"   Total highlights extracted: {sum(len(r['results']) for r in all_results)}")
+        print(f"   Sources used: {len(set(r['domain'] for result in all_results for r in result['results']))}")
         
         return all_results
     

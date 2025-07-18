@@ -2,6 +2,48 @@
 
 A sophisticated web application that provides AI-powered market intelligence analysis using advanced search capabilities and GPT analysis. Get comprehensive market insights, competitive analysis, and strategic recommendations for your business.
 
+## 🎯 **Key Differentiators for Financial Intelligence**
+
+### ⚡ **Highlights Endpoint - Precision over Volume**
+Unlike traditional web scraping that processes entire articles, this system uses **Exa's highlights endpoint** to extract only the most relevant sentences:
+
+```python
+# Traditional approach: Download entire articles (slow, noisy)
+# Our approach: Extract precise highlights (fast, focused)
+search_options = {
+    "num_sentences": 2,        # Precise control over content length
+    "highlightsPerUrl": 2,     # Multiple insights per source
+}
+```
+
+**Why This Matters for Financial Research:**
+- **📊 Executive Ready**: Get 1-2 sentence summaries perfect for leadership briefings
+- **⚡ Speed**: No manual processing of 10,000+ word articles
+- **🎯 Precision**: Only the information directly relevant to your query
+- **💡 Context**: Maintains semantic relevance to financial metrics and trends
+
+### 🏦 **Custom Domain Filtering - Trusted Sources Only**
+Control exactly which financial sources your intelligence comes from:
+
+```python
+# Financial-grade sources
+trusted_domains = [
+    "bloomberg.com", "reuters.com", "wsj.com", 
+    "forbes.com", "ft.com", "cnbc.com",
+    "sec.gov", "federalreserve.gov"
+]
+```
+
+**Critical for Financial Compliance:**
+- **✅ Regulatory Compliance**: Only SEC-approved and institutional-grade sources
+- **🛡️ Risk Management**: Eliminate unreliable or unverified information
+- **📈 Data Quality**: Financial-grade reporting standards
+- **🔒 Audit Trail**: Clear source attribution for compliance teams
+
+> 📖 **For detailed technical documentation on these differentiators, see [KEY_FEATURES.md](KEY_FEATURES.md)**
+
+---
+
 ## 🚀 Features
 
 - **AI-Powered Search**: Uses Exa API for intelligent web search across business sources

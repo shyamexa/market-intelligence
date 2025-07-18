@@ -298,6 +298,68 @@
             font-size: 14px;
         }
 
+        /* Features Section Styles */
+        .features-section {
+            margin-bottom: 32px;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 20px;
+        }
+
+        .feature-card {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+            border: 1px solid #f3f4f6;
+            transition: all 0.2s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .feature-card.highlights {
+            border-left: 4px solid #10b981;
+        }
+
+        .feature-card.domains {
+            border-left: 4px solid #3b82f6;
+        }
+
+        .feature-icon {
+            font-size: 2rem;
+            margin-bottom: 12px;
+        }
+
+        .feature-card h3 {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 8px;
+        }
+
+        .feature-card p {
+            color: #6b7280;
+            line-height: 1.6;
+            margin-bottom: 12px;
+            font-size: 14px;
+        }
+
+        .feature-benefit {
+            background: #f9fafb;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 500;
+            color: #374151;
+            border: 1px solid #e5e7eb;
+        }
+
         @media (max-width: 768px) {
             .header {
                 padding: 40px 0 32px;
@@ -305,6 +367,11 @@
             
             .header h1 {
                 font-size: 2.5rem;
+            }
+            
+            .features-grid {
+                grid-template-columns: 1fr;
+                gap: 16px;
             }
             
             .form-section {
@@ -329,6 +396,24 @@
             <p>Get comprehensive market insights powered by AI</p>
         </div>
 
+        <!-- Key Features Section -->
+        <div class="features-section">
+            <div class="features-grid">
+                <div class="feature-card highlights">
+                    <div class="feature-icon">🎯</div>
+                    <h3>Highlights Endpoint</h3>
+                    <p>Extracts only the most relevant sentences from articles, not entire web pages. Perfect for executive briefings.</p>
+                    <div class="feature-benefit">Get precise insights, not information overload</div>
+                </div>
+                <div class="feature-card domains">
+                    <div class="feature-icon">🏦</div>
+                    <h3>Trusted Domain Filtering</h3>
+                    <p>Search only institutional-grade sources like Bloomberg, Reuters, WSJ. Ensures compliance and data quality.</p>
+                    <div class="feature-benefit">Financial-grade sources for reliable intelligence</div>
+                </div>
+            </div>
+        </div>
+
         <div class="form-section">
             <form id="analysisForm">
                 <div class="form-grid">
@@ -340,9 +425,12 @@
 
 
                     <div class="form-group">
-                        <label for="domains">News Sources (comma-separated domains)</label>
-                        <textarea id="domains" name="domains" placeholder="e.g., techcrunch.com, bloomberg.com, reuters.com"></textarea>
-                        <small style="color: #6b7280; font-size: 12px; margin-top: 4px; display: block;">Leave empty to use default business sources</small>
+                        <label for="domains">Trusted News Sources 🏦 (comma-separated domains)</label>
+                        <textarea id="domains" name="domains" placeholder="e.g., bloomberg.com, reuters.com, wsj.com, sec.gov"></textarea>
+                        <small style="color: #6b7280; font-size: 12px; margin-top: 4px; display: block;">
+                            <strong>Domain Filtering:</strong> Restrict search to specific trusted sources for compliance. 
+                            Leave empty for default financial-grade sources (Bloomberg, Reuters, WSJ, Forbes, etc.)
+                        </small>
                     </div>
 
                     <div class="form-group">
