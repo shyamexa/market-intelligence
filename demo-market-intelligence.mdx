@@ -1,0 +1,87 @@
+---
+title: "Market Intelligence Bot"
+description: "Specialized RAG system for financial firms using Exa's highlights and domain filtering"
+---
+
+# Market Intelligence Bot
+
+## Overview
+
+The Market Intelligence Bot is a specialized RAG (Retrieval-Augmented Generation) system built for financial firms and competitive intelligence teams. It leverages Exa's advanced search capabilities combined with OpenAI's language models to deliver high-quality, source-backed market insights.
+
+## Key Features for Financial Intelligence
+
+### 🎯 Highlights-Based Extraction
+
+Unlike traditional web scraping, this system uses Exa's **highlights** feature to extract the most relevant sentences from web pages. This approach is particularly valuable for financial research because:
+
+- **Precision**: Gets exactly the information needed without noise
+- **Context**: Maintains semantic relevance to your query
+- **Efficiency**: No need to process entire articles manually
+
+### 📏 Customizable Content Length
+
+The `num_sentences` parameter allows precise control over highlight length:
+
+```python
+highlights_options = {
+    "num_sentences": 2,        # Perfect for executive summaries
+    "highlights_per_url": 2    # Multiple insights per source
+}
+```
+
+**Financial Use Cases:**
+
+- **Earnings Analysis**: 1-2 sentences for key metrics
+- **Market Trends**: 3-4 sentences for comprehensive context
+- **Regulatory Updates**: Variable length based on complexity
+
+### 🏦 Domain Filtering for Trusted Sources
+
+Critical for financial compliance and accuracy:
+
+```python
+include_domains = [
+    "bloomberg.com", "reuters.com", "wsj.com", 
+    "forbes.com", "ft.com", "cnbc.com",
+    "sec.gov", "federalreserve.gov"
+]
+```
+
+**Why This Matters:**
+
+- **Regulatory Compliance**: Ensures sources meet institutional standards
+- **Data Quality**: Financial-grade information from trusted publishers
+- **Risk Management**: Reduces exposure to unreliable sources
+
+## Architecture
+
+### Core Components
+
+```python
+class MarketIntelligenceBot:
+    def __init__(self, company_name, industry, competitors):
+        self.exa = Exa(api_key=EXA_API_KEY)
+        self.openai = OpenAI(api_key=OPENAI_API_KEY)
+```
+
+### Search Configuration
+
+```python
+def search_market_intelligence(self, questions, timeframe="1M"):
+    search_options = {
+        "num_sentences": 2,
+        "highlights_per_url": 2,
+    }
+    
+    # Date filtering for recency
+    start_date = (datetime.now() - timedelta(days=30)).strftime("%Y-%m-%d")
+    
+    search_response = exa.search_and_contents(
+        question, 
+        highlights=search_options, 
+        num_results=5,
+        start_published_date=start_date,
+        include_domains=trusted_financial_domains
+    )
+```

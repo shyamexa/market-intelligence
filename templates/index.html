@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Market Intelligence Analyzer</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #fafafa;
+            min-height: 100vh;
+            color: #1a1a1a;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .header {
+            text-align: center;
+            padding: 60px 0 40px;
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 16px;
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            color: #6b7280;
+            font-weight: 400;
+        }
+
+        .form-section {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+            padding: 32px;
+            margin-bottom: 24px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            font-weight: 500;
+            margin-bottom: 8px;
+            color: #374151;
+            font-size: 14px;
+        }
+
+        .form-group input, .form-group select, .form-group textarea {
+            padding: 12px 16px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            font-size: 15px;
+            font-family: inherit;
+            transition: all 0.2s ease;
+            background: #ffffff;
+        }
+
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+            outline: none;
+            border-color: #6366f1;
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        }
+
+        .form-group input::placeholder, .form-group textarea::placeholder {
+            color: #9ca3af;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 80px;
+            font-family: inherit;
+        }
+
+        .submit-btn {
+            background: #6366f1;
+            color: white;
+            border: none;
+            padding: 16px 32px;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            width: 100%;
+            max-width: 280px;
+            margin: 0 auto;
+            display: block;
+            font-family: inherit;
+        }
+
+        .submit-btn:hover {
+            background: #5855eb;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
+        }
+
+        .submit-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .loading {
+            text-align: center;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+            padding: 48px 32px;
+            display: none;
+            margin-bottom: 24px;
+        }
+
+        .spinner {
+            border: 3px solid #f3f4f6;
+            border-top: 3px solid #6366f1;
+            border-radius: 50%;
+            width: 32px;
+            height: 32px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 16px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .loading h3 {
+            color: #374151;
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: 18px;
+        }
+
+        .loading p {
+            color: #6b7280;
+            font-size: 14px;
+        }
+
+        .results-section {
+            display: none;
+        }
+
+        .results-header {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+            padding: 24px;
+            margin-bottom: 24px;
+        }
+
+        .results-header h2 {
+            color: #1f2937;
+            margin-bottom: 16px;
+            font-size: 24px;
+            font-weight: 600;
+        }
+
+        .results-header p {
+            color: #6b7280;
+            margin-bottom: 4px;
+            font-size: 14px;
+        }
+
+        .results-header p strong {
+            color: #374151;
+            font-weight: 500;
+        }
+
+        .analysis-card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+            padding: 24px;
+            margin-bottom: 20px;
+            border: 1px solid #f3f4f6;
+        }
+
+        .analysis-card h3 {
+            color: #1f2937;
+            margin-bottom: 16px;
+            font-size: 18px;
+            font-weight: 600;
+            line-height: 1.4;
+        }
+
+        .analysis-card .analysis-content {
+            color: #4b5563;
+            line-height: 1.7;
+            margin-bottom: 16px;
+            font-size: 15px;
+        }
+
+        .analysis-card .analysis-content p {
+            margin-bottom: 12px;
+        }
+
+        .analysis-card .analysis-content strong {
+            color: #1f2937;
+            font-weight: 600;
+        }
+
+        .sources {
+            background: #f9fafb;
+            padding: 16px;
+            border-radius: 8px;
+            margin-top: 16px;
+            border: 1px solid #f3f4f6;
+        }
+
+        .sources h4 {
+            color: #374151;
+            margin-bottom: 12px;
+            font-size: 13px;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .sources ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .sources li {
+            color: #6b7280;
+            font-size: 13px;
+            margin-bottom: 12px;
+            padding-left: 16px;
+            position: relative;
+            line-height: 1.5;
+        }
+
+        .sources li:before {
+            content: "•";
+            color: #6366f1;
+            position: absolute;
+            left: 0;
+            font-weight: bold;
+        }
+
+        .sources li a {
+            color: #6366f1;
+            text-decoration: none;
+            font-weight: 500;
+            display: block;
+            margin-bottom: 2px;
+        }
+
+        .sources li a:hover {
+            color: #4f46e5;
+            text-decoration: underline;
+        }
+
+        .sources li .date {
+            color: #9ca3af;
+            font-size: 11px;
+            font-style: italic;
+        }
+
+        .error {
+            background: #fef2f2;
+            color: #dc2626;
+            padding: 16px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border: 1px solid #fecaca;
+            font-size: 14px;
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                padding: 40px 0 32px;
+            }
+            
+            .header h1 {
+                font-size: 2.5rem;
+            }
+            
+            .form-section {
+                padding: 24px;
+            }
+            
+            .form-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .submit-btn {
+                max-width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Market Intelligence</h1>
+            <p>Get comprehensive market insights powered by AI</p>
+        </div>
+
+        <div class="form-section">
+            <form id="analysisForm">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="company_name">Company Name *</label>
+                        <input type="text" id="company_name" name="company_name" required placeholder="Enter your company name">
+                    </div>
+
+
+
+                    <div class="form-group">
+                        <label for="domains">News Sources (comma-separated domains)</label>
+                        <textarea id="domains" name="domains" placeholder="e.g., techcrunch.com, bloomberg.com, reuters.com"></textarea>
+                        <small style="color: #6b7280; font-size: 12px; margin-top: 4px; display: block;">Leave empty to use default business sources</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="focus_area">Focus Area</label>
+                        <select id="focus_area" name="focus_area">
+                            <option value="general">General Market Intelligence</option>
+                            <option value="competitive">Competitive Analysis</option>
+                            <option value="funding">Funding & Investment</option>
+                            <option value="trends">Market Trends</option>
+                            <option value="sales">Sales & Revenue</option>
+                            <option value="regulatory">Regulatory & Compliance</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="timeframe">Timeframe</label>
+                        <select id="timeframe" name="timeframe">
+                            <option value="1W">Last Week</option>
+                            <option value="2W">Last 2 Weeks</option>
+                            <option value="1M" selected>Last Month</option>
+                            <option value="2M">Last 2 Months</option>
+                            <option value="3M">Last 3 Months</option>
+                            <option value="6M">Last 6 Months</option>
+                            <option value="1Y">Last Year</option>
+                            <option value="2Y">Last 2 Years</option>
+                        </select>
+                    </div>
+                </div>
+
+                <button type="submit" class="submit-btn" id="submitBtn">
+                    Generate Report
+                </button>
+            </form>
+        </div>
+
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <h3>Analyzing Market Intelligence...</h3>
+            <p>This may take a few minutes as we gather and analyze data from multiple sources.</p>
+        </div>
+
+        <div class="results-section" id="resultsSection">
+            <div class="results-header" id="resultsHeader">
+                <!-- Results header will be populated here -->
+            </div>
+            <div id="resultsContent">
+                <!-- Results will be populated here -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+
+
+        document.getElementById('analysisForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const submitBtn = document.getElementById('submitBtn');
+            const loading = document.getElementById('loading');
+            const resultsSection = document.getElementById('resultsSection');
+            
+            // Show loading state
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Processing...';
+            loading.style.display = 'block';
+            resultsSection.style.display = 'none';
+            
+            // Collect form data
+            const formData = {
+                company_name: document.getElementById('company_name').value,
+                domains: document.getElementById('domains').value,
+                focus_area: document.getElementById('focus_area').value,
+                timeframe: document.getElementById('timeframe').value
+            };
+            
+            try {
+                const response = await fetch('/analyze', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(formData)
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    displayResults(data.report, formData);
+                } else {
+                    throw new Error(data.error || 'Analysis failed');
+                }
+                
+            } catch (error) {
+                console.error('Error:', error);
+                displayError(error.message);
+            } finally {
+                // Reset loading state
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Generate Report';
+                loading.style.display = 'none';
+            }
+        });
+        
+        function displayResults(report, formData) {
+            const resultsSection = document.getElementById('resultsSection');
+            const resultsHeader = document.getElementById('resultsHeader');
+            const resultsContent = document.getElementById('resultsContent');
+            
+            // Create a readable timeframe label
+            const timeframeLabels = {
+                '1W': 'Last Week',
+                '2W': 'Last 2 Weeks', 
+                '1M': 'Last Month',
+                '2M': 'Last 2 Months',
+                '3M': 'Last 3 Months',
+                '6M': 'Last 6 Months',
+                '1Y': 'Last Year',
+                '2Y': 'Last 2 Years'
+            };
+            
+            // Update header
+            resultsHeader.innerHTML = `
+                <h2>Market Intelligence Report</h2>
+                <p><strong>Company:</strong> ${report.company}</p>
+                <p><strong>Focus Area:</strong> ${report.focus_area}</p>
+                <p><strong>Timeframe:</strong> ${timeframeLabels[formData.timeframe] || formData.timeframe}</p>
+                <p><strong>Generated:</strong> ${new Date(report.generated_at).toLocaleString()}</p>
+            `;
+            
+            // Display executive summary
+            let content = `
+                <div class="analysis-card">
+                    <h3>Executive Summary</h3>
+                    <p>${report.executive_summary}</p>
+                </div>
+            `;
+            
+            // Display detailed analysis
+            if (report.detailed_analysis && report.detailed_analysis.length > 0) {
+                content += '<h3 style="margin: 24px 0 20px 0; color: #1f2937; font-size: 20px; font-weight: 600;">Detailed Analysis</h3>';
+                
+                report.detailed_analysis.forEach(analysis => {
+                    // Format the analysis text with better line breaks and structure
+                    const formattedAnalysis = analysis.analysis
+                        .replace(/\n\n/g, '</p><p>')
+                        .replace(/\n/g, '<br>')
+                        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                        .replace(/^- (.+)/gm, '• $1');
+                    
+                    content += `
+                        <div class="analysis-card">
+                            <h3>${analysis.question}</h3>
+                            <div class="analysis-content">
+                                <p>${formattedAnalysis}</p>
+                            </div>
+                            <div class="sources">
+                                <h4>Sources:</h4>
+                                <ul>
+                                    ${analysis.sources.map(source => `
+                                        <li>
+                                            <a href="${source.url}" target="_blank" rel="noopener noreferrer">
+                                                ${source.title}
+                                            </a>
+                                            ${source.published_date ? `<span class="date">(${new Date(source.published_date).toLocaleDateString()})</span>` : ''}
+                                        </li>
+                                    `).join('')}
+                                </ul>
+                            </div>
+                        </div>
+                    `;
+                });
+            }
+            
+            resultsContent.innerHTML = content;
+            resultsSection.style.display = 'block';
+            
+            // Scroll to results
+            resultsSection.scrollIntoView({ behavior: 'smooth' });
+        }
+        
+        function displayError(message) {
+            const resultsSection = document.getElementById('resultsSection');
+            const resultsHeader = document.getElementById('resultsHeader');
+            const resultsContent = document.getElementById('resultsContent');
+            
+            resultsHeader.innerHTML = '<h2>Analysis Failed</h2>';
+            resultsContent.innerHTML = `
+                <div class="error">
+                    <strong>Error:</strong> ${message}
+                </div>
+            `;
+            
+            resultsSection.style.display = 'block';
+            resultsSection.scrollIntoView({ behavior: 'smooth' });
+        }
+    </script>
+</body>
+</html> 
